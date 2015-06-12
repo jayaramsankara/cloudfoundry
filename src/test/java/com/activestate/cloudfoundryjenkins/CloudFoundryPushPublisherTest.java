@@ -88,7 +88,7 @@ public class CloudFoundryPushPublisherTest {
                         TEST_USERNAME, TEST_PASSWORD));
     }
 
-    @Ignore
+    @Test
     public void testPerformSimplePushManifestFile() throws Exception {
         FreeStyleProject project = j.createFreeStyleProject();
         project.setScm(new ExtractResourceSCM(getClass().getResource("hello-java.zip")));
@@ -116,7 +116,7 @@ public class CloudFoundryPushPublisherTest {
         assertTrue("App did not send back correct text", content.contains("Hello from"));
     }
 
-    @Ignore
+    @Test
     public void testPerformSimplePushJenkinsConfig() throws Exception {
         FreeStyleProject project = j.createFreeStyleProject();
         project.setScm(new ExtractResourceSCM(getClass().getResource("hello-java.zip")));
@@ -149,7 +149,7 @@ public class CloudFoundryPushPublisherTest {
         assertTrue("App did not send back correct text", content.contains("Hello from"));
     }
 
-    @Ignore
+    @Test
     @WithTimeout(300)
     public void testPerformResetIfExists() throws Exception {
         FreeStyleProject project = j.createFreeStyleProject();
@@ -193,7 +193,7 @@ public class CloudFoundryPushPublisherTest {
         assertEquals(256, client.getApplication("hello-java").getMemory());
     }
 
-    @Ignore
+    @Test
     public void testPerformMultipleInstances() throws Exception {
         FreeStyleProject project = j.createFreeStyleProject();
         project.setScm(new ExtractResourceSCM(getClass().getResource("hello-java.zip")));
@@ -227,7 +227,7 @@ public class CloudFoundryPushPublisherTest {
         assertTrue("App did not send back correct text", content.contains("Hello from"));
     }
 
-    @Ignore
+    @Test
     public void testPerformCustomBuildpack() throws Exception {
         FreeStyleProject project = j.createFreeStyleProject();
         project.setScm(new ExtractResourceSCM(getClass().getResource("heroku-node-js-sample.zip")));
@@ -260,7 +260,7 @@ public class CloudFoundryPushPublisherTest {
         assertTrue("App did not send back correct text", content.contains("Hello World!"));
     }
 
-    @Ignore
+    @Test
     public void testPerformMultiAppManifest() throws Exception {
         FreeStyleProject project = j.createFreeStyleProject();
         project.setScm(new ExtractResourceSCM(getClass().getResource("multi-hello-java.zip")));
@@ -299,7 +299,7 @@ public class CloudFoundryPushPublisherTest {
         assertEquals(300, client.getApplication("hello-java-2").getMemory());
     }
 
-    @Ignore
+    @Test
     public void testPerformCustomManifestFileLocation() throws Exception {
         FreeStyleProject project = j.createFreeStyleProject();
         project.setScm(new ExtractResourceSCM(getClass().getResource("hello-java-custom-manifest-location.zip")));
@@ -358,7 +358,7 @@ public class CloudFoundryPushPublisherTest {
                 log.contains("ERROR: The application failed to start after"));
     }
 
-    @Ignore
+    @Ignore 
     public void testPerformEnvVarsManifestFile() throws Exception {
         FreeStyleProject project = j.createFreeStyleProject();
         project.setScm(new ExtractResourceSCM(getClass().getResource("python-env.zip")));
@@ -387,7 +387,7 @@ public class CloudFoundryPushPublisherTest {
         assertTrue("App did not have correct ENV_VAR_THREE", content.contains("ENV_VAR_THREE: value3"));
     }
 
-    @Ignore
+    @Ignore 
     public void testPerformServicesNamesManifestFile() throws Exception {
         CloudService service1 = new CloudService();
         service1.setName("mysql_service1");
@@ -427,7 +427,7 @@ public class CloudFoundryPushPublisherTest {
         assertTrue("App did not have mysql_service2 bound", content.contains("mysql_service2"));
     }
 
-    @Test
+    @Ignore
     public void testPerformNoRoute() throws Exception {
         FreeStyleProject project = j.createFreeStyleProject();
         project.setScm(new ExtractResourceSCM(getClass().getResource("hello-java.zip")));

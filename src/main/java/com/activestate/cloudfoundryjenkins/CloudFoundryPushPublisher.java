@@ -221,13 +221,12 @@ public class CloudFoundryPushPublisher extends Recorder {
 			InterruptedException {
 		try {
 			String OrigAppURI = "https://" + deploymentInfo.getHostName() + "." + deploymentInfo.getDomain();
-			System.out.println("The Orig Route  "+OrigAppURI);
 			listener.getLogger().println("Pushing " + deploymentInfo.getAppName() + " app to " + target);
 
 			// This is where we would create services, if we decide to add that feature.
 			// List<CloudService> cloudServices = deploymentInfo.getServices();
 			// client.createService();
-			String greenDeployAppName = handleExistingAppAndUpdateDeploymentInfo(client, listener, deploymentInfo);
+			 handleExistingAppAndUpdateDeploymentInfo(client, listener, deploymentInfo);
 			String appURI = "https://" + deploymentInfo.getHostName() + "." + deploymentInfo.getDomain();
 			
 			addToAppURIs(appURI);
@@ -251,16 +250,16 @@ public class CloudFoundryPushPublisher extends Recorder {
 			if (deploymentInfo.getInstances() > 1) {
 				client.updateApplicationInstances(appName, deploymentInfo.getInstances());
 			}
-			//Assigning the Original Route To Green Deployment
-			//TODO: Need a better way to do same as during 
-			addRouteToApplication(client, greenDeployAppName, OrigAppURI);
 			// Push files
 			listener.getLogger().println("Pushing app bits.");
 
 			boolean registered = registerForLogStream(client, appName, listener);
 
 			pushAppBits(build, deploymentInfo, client);
-
+			
+			//Assigning the Original Route To Green Deployment
+			//TODO: Need a better way to do same as during 
+			addRouteToApplication(client, deploymentInfo.getAppName(), OrigAppURI);
 			// Start or restart application
 			StartingInfo startingInfo;
 			if (deploymentInfo.isNewAppToBeCreated()) {
@@ -352,7 +351,7 @@ public class CloudFoundryPushPublisher extends Recorder {
 
 	}
 
-	protected String handleExistingAppAndUpdateDeploymentInfo(CloudFoundryClient client, BuildListener listener, DeploymentInfo deploymentInfo) {
+	protected void handleExistingAppAndUpdateDeploymentInfo(CloudFoundryClient client, BuildListener listener, DeploymentInfo deploymentInfo) {
 		// Check if app already exist
 		List<CloudApplication> existingApps = client.getApplications();
 		boolean createNewApp = true;
@@ -374,14 +373,12 @@ public class CloudFoundryPushPublisher extends Recorder {
 					String greenAppHostname = appHostName + "-" + suffix;
 					deploymentInfo.setAppName(greenAppName);
 					deploymentInfo.setHostname(greenAppHostname);
-					appName = greenAppName;
 				}
 				break;
 			}
 		}
 		
 		deploymentInfo.setNewAppToBeCreated(createNewApp);
-		return appName;
 	}
 
     private void pushAppBits(AbstractBuild build, DeploymentInfo deploymentInfo, CloudFoundryClient client)
@@ -771,12 +768,11 @@ public class CloudFoundryPushPublisher extends Recorder {
      */
     public static void addRouteToApplication(CloudFoundryClient client, String appName, String newRoute) {
         try {
-            System.out.println("Adding route " + newRoute + " to " + appName);
             List<String> routes = client.getApplication(appName).getUris();
             routes.add(newRoute);
             client.updateApplicationUris(appName, routes);
         } catch (CloudFoundryException e) {
-            System.out.println("Application " + appName + " was not found while trying to add route.");
+            e.getMessage();
         }
     }
 }
