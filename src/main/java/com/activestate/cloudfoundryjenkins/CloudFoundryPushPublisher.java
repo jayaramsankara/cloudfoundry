@@ -259,11 +259,32 @@ public class CloudFoundryPushPublisher extends Recorder {
 			if(doesAppExist(client, greenAppName)) {
 				listener.getLogger().println("Stopping the green app "+greenAppName);
 				client.stopApplication(greenAppName);
+				// Delete old green app names that were retained in stopped state for previous failures.
+				// Only the latest failed app is retained.
+				List<CloudApplication> apps =  client.getApplications();
+				for(CloudApplication app : apps) {
+					String appName = app.getName();
+					if(greenAppName.equalsIgnoreCase(appName)){
+						continue;
+					}
+					if(isOldFailedGreenAppInStoppedState(blueAppName, app.getState(), appName) ) {
+						client.deleteApplication(appName);
+					}
+					
+					
+				}
 			}
 		}
 		
 				
 		
+	}
+
+	private boolean isOldFailedGreenAppInStoppedState(String blueAppName, AppState state,
+			String appName) {
+		String uuidregex = "[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}";
+		Pattern regPattern =  Pattern.compile(blueAppName+"-"+uuidregex, Pattern.CASE_INSENSITIVE);
+		return regPattern.matcher(appName).matches() && state == AppState.STOPPED;
 	}
 
 	private void postProcessBGDeployment(CloudFoundryClient client,
